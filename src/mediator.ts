@@ -69,7 +69,7 @@ function getGhostParent() {
   if (draggableInfo && draggableInfo.ghostParent) {
     return draggableInfo.ghostParent;
   }
-
+  
   if (grabbedElement) {
     return grabbedElement.parentElement || window.document.body;
   } else {
@@ -80,9 +80,9 @@ function getGhostParent() {
 function getGhostElement(wrapperElement: HTMLElement, { x, y }: Position, container: IContainer, cursor: string): GhostInfo {
   const wrapperRect = wrapperElement.getBoundingClientRect();
   const { left, top, right, bottom } = wrapperRect;
-
+  
   const wrapperVisibleRect = Utils.getIntersection(container.layout.getContainerRectangles().visibleRect, wrapperRect);
-
+  
   const midX = wrapperVisibleRect.left + (wrapperVisibleRect.right - wrapperVisibleRect.left) / 2;
   const midY = wrapperVisibleRect.top + (wrapperVisibleRect.bottom - wrapperVisibleRect.top) / 2;
   const ghost: HTMLElement = wrapperElement.cloneNode(true) as HTMLElement;
@@ -93,14 +93,14 @@ function getGhostElement(wrapperElement: HTMLElement, { x, y }: Position, contai
   ghost.style.left = '0px';
   ghost.style.transform = null;
   ghost.style.removeProperty('transform');
-
+  
   if (container.shouldUseTransformForGhost()) {
     ghost.style.transform = `translate3d(${left}px, ${top}px, 0)`;
   } else {
     ghost.style.top = `${top}px`;
     ghost.style.left = `${left}px`;
   }
-
+  
   ghost.style.width = (right - left) + 'px';
   ghost.style.height = (bottom - top) + 'px';
   ghost.style.overflow = 'visible';
@@ -108,7 +108,7 @@ function getGhostElement(wrapperElement: HTMLElement, { x, y }: Position, contai
   ghost.style.removeProperty('transition');
   ghost.style.pointerEvents = 'none';
   ghost.style.userSelect = 'none';
-
+  
   if (container.getOptions().dragClass) {
     setTimeout(() => {
       Utils.addClass(ghost.firstElementChild as HTMLElement, container.getOptions().dragClass!);
@@ -120,7 +120,7 @@ function getGhostElement(wrapperElement: HTMLElement, { x, y }: Position, contai
   }
   Utils.addClass(ghost, container.getOptions().orientation || 'vertical');
   Utils.addClass(ghost, constants.ghostClass);
-
+  
   return {
     ghost: ghost,
     centerDelta: { x: midX - x, y: midY - y },
@@ -163,13 +163,13 @@ function handleDropAnimation(callback: Function) {
     getGhostParent().removeChild(ghostInfo.ghost);
     callback();
   }
-
+  
   function animateGhostToPosition({ top, left }: TopLeft, duration: number, dropClass: string | undefined) {
     Utils.addClass(ghostInfo.ghost, 'animated');
     if (dropClass) {
       Utils.addClass(ghostInfo.ghost.firstElementChild, dropClass);
     }
-
+    
     ghostInfo.topLeft.x = left;
     ghostInfo.topLeft.y = top;
     translateGhost(duration);
@@ -177,13 +177,13 @@ function handleDropAnimation(callback: Function) {
       endDrop();
     }, duration + 20);
   }
-
+  
   function shouldAnimateDrop(options: ContainerOptions) {
     return options.shouldAnimateDrop
       ? options.shouldAnimateDrop(draggableInfo.container.getOptions(), draggableInfo.payload)
       : true;
   }
-
+  
   function disappearAnimation(duration: number, clb: Function) {
     Utils.addClass(ghostInfo.ghost, 'animated');
     translateGhost(duration, 0.9, true);
@@ -194,7 +194,7 @@ function handleDropAnimation(callback: Function) {
       clb();
     }, duration + 20);
   }
-
+  
   if (draggableInfo.targetElement) {
     const container = containers.filter(p => p.element === draggableInfo.targetElement)[0];
     if (shouldAnimateDrop(container.getOptions())) {
@@ -213,7 +213,7 @@ function handleDropAnimation(callback: Function) {
       const { behaviour, removeOnDropOut } = container.getOptions();
       if ((behaviour === 'move' || behaviour === 'contain') && (isCanceling || !removeOnDropOut) && container.getDragResult()) {
         const rectangles = container.layout.getContainerRectangles();
-
+        
         // container is hidden somehow
         // move ghost back to last seen position
         if (!Utils.isVisible(rectangles.visibleRect) && Utils.isVisible(rectangles.lastVisibleRect)) {
@@ -258,14 +258,14 @@ function handleDropAnimation(callback: Function) {
   }
 }
 
-const handleDragStartConditions = (function handleDragStartConditions() {
+function handleDragStartConditions() {
   let startEvent: { clientX: number; clientY: number };
   let delay: number;
   let clb: Function;
   let timer: any = null!;
   const moveThreshold = 1;
   const maxMoveInDelay = 5;
-
+  
   function onMove(event: MouseEvent & TouchEvent) {
     const { clientX: currentX, clientY: currentY } = getPointerEvent(event);
     if (!delay) {
@@ -278,19 +278,19 @@ const handleDragStartConditions = (function handleDragStartConditions() {
       }
     }
   }
-
+  
   function onUp() {
     deregisterEvent();
   }
   function onHTMLDrag() {
     deregisterEvent();
   }
-
+  
   function registerEvents() {
     if (delay) {
       timer = setTimeout(callCallback, delay);
     }
-
+    
     moveEvents.forEach(e => window.document.addEventListener(e, onMove as any), {
       passive: false,
     });
@@ -301,7 +301,7 @@ const handleDragStartConditions = (function handleDragStartConditions() {
       passive: false,
     });
   }
-
+  
   function deregisterEvent() {
     clearTimeout(timer);
     moveEvents.forEach(e => window.document.removeEventListener(e, onMove as any), {
@@ -314,21 +314,21 @@ const handleDragStartConditions = (function handleDragStartConditions() {
       passive: false,
     } as any);
   }
-
+  
   function callCallback() {
     clearTimeout(timer);
     deregisterEvent();
     clb();
   }
-
+  
   return function (_startEvent: MouseEvent & TouchEvent, _delay: number, _clb: Function) {
     startEvent = getPointerEvent(_startEvent);
     delay = typeof _delay === 'number' ? _delay : isMobile ? 200 : 0;
     clb = _clb;
-
+    
     registerEvents();
   };
-})();
+}
 
 function onMouseDown(event: MouseEvent & TouchEvent) {
   const e = getPointerEvent(event);
@@ -339,32 +339,32 @@ function onMouseDown(event: MouseEvent & TouchEvent) {
       const container = containers.filter(p => p.element === containerElement)[0];
       const dragHandleSelector = container.getOptions().dragHandleSelector;
       const nonDragAreaSelector = container.getOptions().nonDragAreaSelector;
-
+      
       let startDrag = true;
       if (dragHandleSelector && !Utils.getParent(e.target as Element, dragHandleSelector)) {
         startDrag = false;
       }
-
+      
       if (nonDragAreaSelector && Utils.getParent(e.target as Element, nonDragAreaSelector)) {
         startDrag = false;
       }
-
+      
       if (startDrag) {
         container.layout.invalidate();
         Utils.addClass(window.document.body, constants.disbaleTouchActions);
         Utils.addClass(window.document.body, constants.noUserSelectClass);
-
+        
         const onMouseUp = () => {
           Utils.removeClass(window.document.body, constants.disbaleTouchActions);
           Utils.removeClass(window.document.body, constants.noUserSelectClass);
           window.document.removeEventListener('mouseup', onMouseUp);
         }
-
+        
         window.document.addEventListener('mouseup', onMouseUp);
       }
-
+      
       if (startDrag) {
-        handleDragStartConditions(e, container.getOptions().dragBeginDelay!, () => {
+        handleDragStartConditions()(e, container.getOptions().dragBeginDelay!, () => {
           Utils.clearSelection();
           initiateDrag(e, Utils.getElementCursor(event.target as Element)!);
           addMoveListeners();
@@ -381,7 +381,7 @@ function handleMouseMoveForContainer({ clientX, clientY }: MouseEvent & TouchEve
   let axis: 'x' | 'y';
   let leftTop: 'left' | 'top';
   let size;
-
+  
   if (orientation === 'vertical') {
     mousePos = clientY;
     axis = 'y';
@@ -393,19 +393,19 @@ function handleMouseMoveForContainer({ clientX, clientY }: MouseEvent & TouchEve
     leftTop = 'left';
     size = draggableInfo.size.offsetWidth;
   }
-
+  
   const beginBoundary = beginEnd.begin;
   const endBoundary = beginEnd.end - size;
   const positionInBoundary = Math.max(beginBoundary, Math.min(endBoundary, (mousePos + ghostInfo.positionDelta[leftTop])));
-
+  
   ghostInfo.topLeft[axis] = positionInBoundary;
   draggableInfo.position[axis] = Math.max(beginEnd.begin, Math.min(beginEnd.end, (mousePos + ghostInfo.centerDelta[axis])));
   draggableInfo.mousePosition[axis] = Math.max(beginEnd.begin, Math.min(beginEnd.end, mousePos));
-
+  
   if (draggableInfo.position[axis] < (beginEnd.begin + (size / 2))) {
     draggableInfo.position[axis] = beginEnd.begin + 2;
   }
-
+  
   if (draggableInfo.position[axis] > (beginEnd.end - (size / 2))) {
     draggableInfo.position[axis] = beginEnd.end - 2;
   }
@@ -439,15 +439,15 @@ function onMouseMove(event: MouseEvent & TouchEvent) {
       draggableInfo.mousePosition.x = e.clientX;
       draggableInfo.mousePosition.y = e.clientY;
     }
-
+    
     translateGhost();
-
+    
     if (!handleDrag(draggableInfo)) {
       missedDrag = true;
     } else {
       missedDrag = false;
     }
-
+    
     if (missedDrag) {
       debouncedHandleMissedDragFrame();
     }
@@ -467,7 +467,7 @@ function onMouseUp() {
   removeMoveListeners();
   removeReleaseListeners();
   handleScroll({ reset: true });
-
+  
   if (cursorStyleElement) {
     removeStyle(cursorStyleElement);
     cursorStyleElement = null;
@@ -477,16 +477,16 @@ function onMouseUp() {
     handleMissedDragFrame();
     dropAnimationStarted = true;
     handleDropAnimation(() => {
-      isDragging = false; // 
+      isDragging = false; //
       fireOnDragStartEnd(false);
       const containers = dragListeningContainers || [];
-
+      
       let containerToCallDrop = containers.shift();
       while (containerToCallDrop !== undefined) {
         containerToCallDrop.handleDrop(draggableInfo);
         containerToCallDrop = containers.shift();
       }
-
+      
       dragListeningContainers = null!;
       grabbedElement = null;
       ghostInfo = null!;
@@ -509,7 +509,7 @@ function handleDragImmediate(draggableInfo: DraggableInfo, dragListeningContaine
     containerBoxChanged = !!dragResult.containerBoxChanged || false;
     dragResult.containerBoxChanged = false;
   });
-
+  
   if (containerBoxChanged) {
     containerBoxChanged = false;
     requestAnimationFrame(() => {
@@ -571,7 +571,7 @@ function initiateDrag(position: MousePosition, cursor: string) {
     const container = (containers.filter(p => grabbedElement!.parentElement === p.element)[0]) as IContainer;
     container.setDraggables();
     sourceContainerLockAxis = container.getOptions().lockAxis ? container.getOptions().lockAxis!.toLowerCase() as Axis : null;
-
+    
     draggableInfo = getDraggableInfo(grabbedElement);
     ghostInfo = getGhostElement(
       grabbedElement,
@@ -587,7 +587,7 @@ function initiateDrag(position: MousePosition, cursor: string) {
       x: position.clientX,
       y: position.clientY,
     };
-
+    
     dragListeningContainers = containers.filter(p => p.isDragRelevant(container, draggableInfo.payload));
     draggableInfo.relevantContainers = dragListeningContainers;
     handleDrag = dragHandler(dragListeningContainers);
@@ -599,7 +599,7 @@ function initiateDrag(position: MousePosition, cursor: string) {
     fireOnDragStartEnd(true);
     handleDrag(draggableInfo);
     getGhostParent().appendChild(ghostInfo.ghost);
-
+    
     containerRectableWatcher.start();
   }
 }
@@ -608,13 +608,13 @@ let ghostAnimationFrame: number | null = null;
 function translateGhost(translateDuration = 0, scale = 1, fadeOut = false) {
   const { ghost, topLeft: { x, y } } = ghostInfo;
   const useTransform = draggableInfo.container ? draggableInfo.container.shouldUseTransformForGhost() : true;
-
+  
   let transformString = useTransform ? `translate3d(${x}px,${y}px, 0)` : null;
-
+  
   if (scale !== 1) {
     transformString = transformString ? `${transformString} scale(${scale})` : `scale(${scale})`;
   }
-
+  
   if (translateDuration > 0) {
     ghostInfo.ghost.style.transitionDuration = translateDuration + 'ms';
     requestAnimationFrame(() => {
@@ -630,7 +630,7 @@ function translateGhost(translateDuration = 0, scale = 1, fadeOut = false) {
     })
     return;
   }
-
+  
   if (ghostAnimationFrame === null) {
     ghostAnimationFrame = requestAnimationFrame(() => {
       transformString && (ghost.style.transform = transformString);
@@ -648,12 +648,12 @@ function translateGhost(translateDuration = 0, scale = 1, fadeOut = false) {
 
 function registerContainer(container: IContainer) {
   containers.push(container);
-
+  
   if (isDragging && draggableInfo) {
     if (container.isDragRelevant(draggableInfo.container, draggableInfo.payload)) {
       dragListeningContainers.push(container);
       container.prepareDrag(container, dragListeningContainers);
-
+      
       if (handleScroll) {
         handleScroll({ reset: true, draggableInfo: undefined! });
       }
@@ -666,16 +666,16 @@ function registerContainer(container: IContainer) {
 
 function unregisterContainer(container: IContainer) {
   containers.splice(containers.indexOf(container), 1);
-
+  
   if (isDragging && draggableInfo) {
     if (draggableInfo.container === container) {
       container.fireRemoveElement();
     }
-
+    
     if (draggableInfo.targetElement === container.element) {
       draggableInfo.targetElement = null;
     }
-
+    
     const indexInDragListeners = dragListeningContainers.indexOf(container);
     if (indexInDragListeners > -1) {
       dragListeningContainers.splice(indexInDragListeners, 1);
@@ -699,7 +699,7 @@ function watchRectangles() {
       }, 50);
     });
   }
-
+  
   function stop() {
     if (animationHandle !== null) {
       cancelAnimationFrame(animationHandle);
@@ -707,7 +707,7 @@ function watchRectangles() {
     }
     isStarted = false;
   }
-
+  
   return {
     start: () => {
       if (!isStarted) {
@@ -723,20 +723,20 @@ function cancelDrag() {
   if (isDragging && !isCanceling && !dropAnimationStarted) {
     isCanceling = true;
     missedDrag = false;
-
+    
     const outOfBoundsDraggableInfo: DraggableInfo = Object.assign({}, draggableInfo, {
       targetElement: null,
       position: { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER },
       mousePosition: { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER },
     });
-
+    
     dragListeningContainers.forEach(container => {
       container.handleDrag(outOfBoundsDraggableInfo);
     });
-
+    
     draggableInfo.targetElement = null;
     draggableInfo.cancelDrop = true;
-
+    
     onMouseUp();
     isCanceling = false;
   }
@@ -750,6 +750,7 @@ function Mediator() {
     },
     unregister: function (container: IContainer) {
       unregisterContainer(container);
+      handleScroll = null!;
     },
     isDragging: function () {
       return isDragging;
