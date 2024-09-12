@@ -141,4 +141,5 @@ export interface LayoutManager {
   invalidateRects: () => void;
   getPosition: (position: Position) => Rect;
   setBegin: (style: CSSStyleDeclaration, value: string) => void;
+  removeResize: () => void;
 }

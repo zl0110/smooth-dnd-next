@@ -62,15 +62,22 @@ export default function layoutManager(containerElement: ElementX, orientation: O
 	const values: Dictionary = {
 		translation: 0
 	};
-
-	window.addEventListener('resize', function () {
+	
+	
+	function resizeHandler() {
 		invalidateContainerRectangles(containerElement);
-	});
+	}
+	
+	window.addEventListener('resize', resizeHandler);
 
 	setTimeout(() => {
 		invalidate();
 	}, 10);
-
+	
+	function removeResize() {
+		window.removeEventListener('resize', resizeHandler);
+	}
+	
 	function invalidate() {
 		invalidateContainerRectangles(containerElement);
 		invalidateContainerScale(containerElement);
@@ -256,5 +263,6 @@ export default function layoutManager(containerElement: ElementX, orientation: O
 		invalidateRects,
 		getPosition,
 		setBegin,
+		removeResize,
 	};
 }
