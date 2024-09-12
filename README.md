@@ -1,12 +1,14 @@
-# smooth-dnd
+# smooth-dnd-next
+
+Forked from <a href="https://github.com/kutlugsahin/smooth-dnd">smooth-dnd</a>, **fixed the memory leak issue**.
 
 A fast and lightweight drag&drop, sortable library for with many configuration options covering many d&d scenarios. There is no external dependencies. It uses css transitions for animations so it's hardware accelerated whenever possible.
 
-For **React** components and usage follow <a href="https://github.com/kutlugsahin/react-smooth-dnd/">link</a> 
+For **React** components and usage follow <a href="https://github.com/kutlugsahin/react-smooth-dnd/">link</a>
 
-For **Angular** components and usage follow <a href="https://github.com/kutlugsahin/ngx-smooth-dnd/">link</a>  
+For **Angular** components and usage follow <a href="https://github.com/kutlugsahin/ngx-smooth-dnd/">link</a>
 
-For **Vue.js** components and usage follow <a href="https://github.com/kutlugsahin/vue-smooth-dnd/">link</a>  
+For **Vue.js** components and usage follow <a href="https://github.com/kutlugsahin/vue-smooth-dnd/">link</a>
 
 **Show, don't tell !**
 ### <a href="https://kutlugsahin.github.io/smooth-dnd-demo/">Demo page</a>
@@ -14,7 +16,7 @@ For **Vue.js** components and usage follow <a href="https://github.com/kutlugsah
 ### Installation
 
 ```shell
-npm i smooth-dnd
+npm i smooth-dnd-next
 ```
 
 ## Usage
@@ -50,7 +52,7 @@ var container = SmoothDnD(containerElement, options);
 - **options** : `object` : Set of parameters described below.
 #### Returns
 - **container** : `object` : handle the the created container which contains **dispose** function.
-  - **dispose** : `function` : function to be called to remove detach SmoothDND form the container. It should be called when removing the **containerElement** from the DOM.
+	- **dispose** : `function` : function to be called to remove detach SmoothDND form the container. It should be called when removing the **containerElement** from the DOM.
 
 
 ## Options
@@ -119,10 +121,10 @@ function onDropReady(dropResult) {
 ```
 #### Parameters
 - **dropResult** : `object`
-	- **removedIndex** : `number` : index of the removed children. Will be `null` if no item is removed. 
-	- **addedIndex** : `number` : index to add droppped item. Will be `null` if no item is added. 
+	- **removedIndex** : `number` : index of the removed children. Will be `null` if no item is removed.
+	- **addedIndex** : `number` : index to add droppped item. Will be `null` if no item is added.
 	- **payload** : `object` : the payload object retrieved by calling *getChildPayload* function.
-	- **element** : `DOMElement` : the DOM element that is moved 
+	- **element** : `DOMElement` : the DOM element that is moved
 
 ### onDrop
 
@@ -135,10 +137,10 @@ function onDrop(dropResult) {
 ```
 #### Parameters
 - **dropResult** : `object`
-	- **removedIndex** : `number` : index of the removed children. Will be `null` if no item is removed. 
-	- **addedIndex** : `number` : index to add droppped item. Will be `null` if no item is added. 
+	- **removedIndex** : `number` : index of the removed children. Will be `null` if no item is removed.
+	- **addedIndex** : `number` : index to add droppped item. Will be `null` if no item is added.
 	- **payload** : `object` : the payload object retrieved by calling *getChildPayload* function.
-	- **element** : `DOMElement` : the DOM element that is moved 
+	- **element** : `DOMElement` : the DOM element that is moved
 
 ### getChildPayload
 
@@ -158,11 +160,11 @@ function getChildPayload(index) {
 ### getGhostParent
 
 The function to be called to get the element that the dragged ghost will be appended. Default parent element is the container itself.
-The ghost element is positioned as 'fixed' and appended to given parent element. 
+The ghost element is positioned as 'fixed' and appended to given parent element.
 But if any anchestor of container has a transform property, ghost element will be positioned relative to that element which breaks the calculations. Thats why if you have any transformed parent element of Containers you should set this property so that it returns any element that has not transformed parent element.
 ```js
 function getGhostParent() {
-  // i.e return document.body;
+	// i.e return document.body;
 }
 ```
 
@@ -172,7 +174,7 @@ The function to be called by the target container to which the dragged item will
 Sometimes dragged item's dimensions are not suitable with the target container and dropping animation can be wierd. So it can be disabled by returning **false**. If not set drop animations are enabled.
 ```js
 function shouldAnimateDrop(sourceContainerOptions, payload) {
-  return false;
+	return false;
 }
 ```
 #### Parameters
@@ -187,7 +189,7 @@ The function to be called by all containers before drag starts to determine the 
 
 ```js
 function shouldAcceptDrop(sourceContainerOptions, payload) {
-  return true;
+	return true;
 }
 ```
 #### Parameters
@@ -201,7 +203,7 @@ function shouldAcceptDrop(sourceContainerOptions, payload) {
 The function to be called by the relevant container whenever a dragged item enters its boundaries while dragging.
 ```js
 function onDragEnter() {
-  ...
+...
 }
 ```
 
@@ -210,6 +212,6 @@ function onDragEnter() {
 The function to be called by the relevant container whenever a dragged item leaves its boundaries while dragging.
 ```js
 function onDragLeave() {
-  ...
+...
 }
 ```
