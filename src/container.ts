@@ -708,6 +708,7 @@ function Container(element: HTMLElement): (options?: ContainerOptions) => IConta
       scrollListener.dispose();
       unwrapChildren(container.element);
       container.layout.removeResize();
+      container.isDragRelevant = () => false;
     }
 
     function setOptions(options: ContainerOptions, merge = true) {
